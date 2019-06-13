@@ -46,7 +46,7 @@ func (c *Crypto) Check(input, hashed string) (valid bool, mustUpgrade bool, err 
 				return false, false, err
 			}
 
-			mustUpgrade = a.ID() != c.preferred
+			mustUpgrade = valid && a.ID() != c.preferred
 			return valid, mustUpgrade, nil
 		}
 	}
