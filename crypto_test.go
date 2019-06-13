@@ -11,7 +11,7 @@ func TestNullCrypto(t *testing.T) {
 }
 
 func TestPBKDF2Crypto(t *testing.T) {
-	runCryptoTests(t, NewPBKDF2Crypto(8192, 32, 24))
+	runCryptoTests(t, NewPBKDF2Crypto())
 }
 
 func runCryptoTests(t *testing.T, a Algorithm) {
@@ -56,7 +56,7 @@ func TestUpgrade(t *testing.T) {
 
 	// Now we use PBKDF2
 	c = New(
-		NewPBKDF2Crypto(4096, 32, 24),
+		NewPBKDF2Crypto(),
 		NullCrypto{}, // Load support for null crypto, to recognize it
 	)
 
@@ -87,4 +87,22 @@ func TestUpgrade(t *testing.T) {
 	assert.False(valid)
 	assert.False(mustUpgrade)
 
+	// Check upgrades for PBKDF2
+	oc := New(NewPBKDF2CryptoWithOptions(8192, 32, 24, []HashFunction{SHA1}))
+	h3, err := oc.Hash("test")
+	assert.NoError(err)
+
+	valid, mustUpgrade, err = c.Check("test", h3)
+	assert.NoError(err)
+	assert.True(valid)
+	assert.True(mustUpgrade)
+
+	oc = New(NewPBKDF2CryptoWithOptions(4096, 32, 24, []HashFunction{SHA512}))
+	h4, err := oc.Hash("test")
+	assert.NoError(err)
+
+	valid, mustUpgrade, err = c.Check("test", h4)
+	assert.NoError(err)
+	assert.True(valid)
+	assert.True(mustUpgrade)
 }

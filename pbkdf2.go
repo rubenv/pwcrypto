@@ -2,7 +2,6 @@ package backend
 
 import (
 	"crypto/rand"
-	"crypto/sha1"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -16,13 +15,36 @@ type PBKDF2Crypto struct {
 	iter    int
 	keyLen  int
 	saltLen int
+	hashFns []HashFunction
 }
 
-func NewPBKDF2Crypto(iter, keyLen, saltLen int) PBKDF2Crypto {
+// Create PBKDF2 with recommended options
+func NewPBKDF2Crypto() PBKDF2Crypto {
+	return NewPBKDF2CryptoWithOptions(8192, 32, 24, []HashFunction{
+		SHA512,
+		SHA256,
+		SHA1,
+	})
+}
+
+// Create PBKDF2C with given number of iterations, key length, salt length and
+// accepted hash functions.
+//
+// First hash function is the preferred one which will be used
+// for new passwords, all other ones will signal the need for an
+// upgrade.
+func NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction) PBKDF2Crypto {
+	if len(hashFns) == 0 {
+		// Yes, panics are nasty, but this keeps the init clean and you only
+		// really do it when starting your application.
+		panic("No hash functions supplied!")
+	}
+
 	return PBKDF2Crypto{
 		iter:    iter,
 		keyLen:  keyLen,
 		saltLen: saltLen,
+		hashFns: hashFns,
 	}
 }
 
@@ -37,14 +59,15 @@ func (a PBKDF2Crypto) Hash(input string) (string, error) {
 		return "", err
 	}
 
-	hashed := pbkdf2.Key([]byte(input), salt, a.iter, a.keyLen, sha1.New)
-	hash := fmt.Sprintf("%x|%x|%d|%d", hashed, salt, a.iter, a.keyLen)
+	hashFn := a.hashFns[0]
+	hashed := pbkdf2.Key([]byte(input), salt, a.iter, a.keyLen, hashFn.Hash())
+	hash := fmt.Sprintf("%x|%x|%d|%d|%s", hashed, salt, a.iter, a.keyLen, hashFn)
 	return hash, nil
 }
 
 func (a PBKDF2Crypto) Check(input, hashed string) (bool, bool, error) {
 	parts := strings.Split(hashed, "|")
-	if len(parts) != 4 {
+	if len(parts) != 5 {
 		return false, false, errors.New("Not a good hash value!")
 	}
 
@@ -64,8 +87,14 @@ func (a PBKDF2Crypto) Check(input, hashed string) (bool, bool, error) {
 		return false, false, err
 	}
 
-	inputhashed := pbkdf2.Key([]byte(input), salt, iter, keyLen, sha1.New)
+	hashFn, err := ParseHashFunction(parts[4])
+	if err != nil {
+		return false, false, err
+	}
+
+	inputhashed := pbkdf2.Key([]byte(input), salt, iter, keyLen, hashFn.Hash())
 
 	valid := fmt.Sprintf("%x", inputhashed) == toMatch
-	return valid, false, nil
+	mustUpgrade := valid && (len(salt) != a.saltLen || iter != a.iter || keyLen != a.keyLen || hashFn != a.hashFns[0])
+	return valid, mustUpgrade, nil
 }
