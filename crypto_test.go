@@ -10,6 +10,10 @@ func TestNullCrypto(t *testing.T) {
 	runCryptoTests(t, NullCrypto{})
 }
 
+func TestPBKDF2Crypto(t *testing.T) {
+	runCryptoTests(t, NewPBKDF2Crypto(8192, 32, 24))
+}
+
 func runCryptoTests(t *testing.T, a Algorithm) {
 	assert := assert.New(t)
 
