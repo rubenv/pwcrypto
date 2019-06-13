@@ -34,12 +34,6 @@ func NewPBKDF2Crypto() PBKDF2Crypto {
 // for new passwords, all other ones will signal the need for an
 // upgrade.
 func NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction) PBKDF2Crypto {
-	if len(hashFns) == 0 {
-		// Yes, panics are nasty, but this keeps the init clean and you only
-		// really do it when starting your application.
-		panic("No hash functions supplied!")
-	}
-
 	return PBKDF2Crypto{
 		iter:    iter,
 		keyLen:  keyLen,
@@ -53,6 +47,10 @@ func (a PBKDF2Crypto) ID() string {
 }
 
 func (a PBKDF2Crypto) Hash(input string) (string, error) {
+	if len(a.hashFns) == 0 {
+		return "", fmt.Errorf("No hash functions supplied for PBKDF2")
+	}
+
 	salt := make([]byte, a.saltLen)
 	_, err := rand.Read(salt)
 	if err != nil {
@@ -90,6 +88,17 @@ func (a PBKDF2Crypto) Check(input, hashed string) (bool, bool, error) {
 	hashFn, err := ParseHashFunction(parts[4])
 	if err != nil {
 		return false, false, err
+	}
+
+	found := false
+	for _, hf := range a.hashFns {
+		if hf == hashFn {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return false, false, nil
 	}
 
 	inputhashed := pbkdf2.Key([]byte(input), salt, iter, keyLen, hashFn.Hash())
