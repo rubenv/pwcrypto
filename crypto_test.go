@@ -23,13 +23,15 @@ func runCryptoTests(t *testing.T, a Algorithm) {
 	assert.NoError(err)
 	assert.NotEqual("", h)
 
-	ok, err := a.Check("test", h)
+	ok, mustUpgrade, err := a.Check("test", h)
 	assert.NoError(err)
 	assert.True(ok)
+	assert.False(mustUpgrade)
 
-	ok, err = a.Check("bad", h)
+	ok, mustUpgrade, err = a.Check("bad", h)
 	assert.NoError(err)
 	assert.False(ok)
+	assert.False(mustUpgrade)
 }
 
 func TestUpgrade(t *testing.T) {

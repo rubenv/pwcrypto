@@ -41,12 +41,14 @@ func (c *Crypto) Check(input, hashed string) (valid bool, mustUpgrade bool, err 
 
 	for _, a := range c.algorithms {
 		if a.ID() == parts[0] {
-			valid, err = a.Check(input, parts[1])
+			valid, mustUpgrade, err = a.Check(input, parts[1])
 			if err != nil {
 				return false, false, err
 			}
 
-			mustUpgrade = valid && a.ID() != c.preferred
+			if !mustUpgrade {
+				mustUpgrade = valid && a.ID() != c.preferred
+			}
 			return valid, mustUpgrade, nil
 		}
 	}
