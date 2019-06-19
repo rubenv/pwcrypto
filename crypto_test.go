@@ -14,6 +14,14 @@ func TestPBKDF2Crypto(t *testing.T) {
 	runCryptoTests(t, NewPBKDF2Crypto())
 }
 
+func TestSHA1Crypto(t *testing.T) {
+	runCryptoTests(t, NewSHA1Crypto())
+}
+
+func TestSHA256Crypto(t *testing.T) {
+	runCryptoTests(t, NewSHA256Crypto())
+}
+
 func runCryptoTests(t *testing.T, a Algorithm) {
 	assert := assert.New(t)
 
