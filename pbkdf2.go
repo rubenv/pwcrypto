@@ -18,6 +18,8 @@ type PBKDF2Crypto struct {
 	hashFns []HashFunction
 }
 
+var _ Algorithm = PBKDF2Crypto{}
+
 // Create PBKDF2 with recommended options
 func NewPBKDF2Crypto() PBKDF2Crypto {
 	return NewPBKDF2CryptoWithOptions(8192, 32, 24, []HashFunction{
