@@ -22,6 +22,10 @@ func TestSHA256Crypto(t *testing.T) {
 	runCryptoTests(t, NewSHA256Crypto())
 }
 
+func TestScryptCrypto(t *testing.T) {
+	runCryptoTests(t, NewScryptCrypto())
+}
+
 func runCryptoTests(t *testing.T, a Algorithm) {
 	assert := assert.New(t)
 
