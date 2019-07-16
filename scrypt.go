@@ -21,17 +21,13 @@ type ScryptCrypto struct {
 
 var _ Algorithm = ScryptCrypto{}
 
-// Create Scrypt with recommended options
+// Create ScryptCrypto with recommended options
 func NewScryptCrypto() ScryptCrypto {
 	return NewScryptCryptoWithOptions(32, 32768, 8, 1, 32)
 }
 
-// Create ScryptC with given number of iterations, key length, salt length and
-// accepted hash functions.
-//
-// First hash function is the preferred one which will be used
-// for new passwords, all other ones will signal the need for an
-// upgrade.
+// Create ScryptCrypto with given salt length, CPU/mem cost, r, p and key
+// length.
 func NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int) ScryptCrypto {
 	return ScryptCrypto{
 		saltLen:    saltLen,
