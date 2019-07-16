@@ -23,6 +23,7 @@ for storing passwords, the other algorithms are accepted for existing passwords
 
 ```
 passwords := pwcrypto.New(
+    NewScryptCrypto(),
     NewPBKDF2Crypto(),
     NewSHA256Crypto(),
 )
@@ -63,8 +64,8 @@ used `SHA1`, but want to upgrade to `SHA256`. Just configure pwcrypto with
 
 ```
 passwords := pwcrypto.New(
-    NewPBKDF2Crypto(),
     NewSHA256Crypto(),
+    NewSHA1Crypto(),
 )
 ```
 
@@ -87,6 +88,11 @@ Verbose: `NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFu
 Allows you to override the number of iterations, key length, salt length and
 hashing functions (for HMAC). Similar to crypto algorithms, the first hash
 function is preferred, others are for fallback compatibility.
+
+### Scrypt
+
+Default: NewScryptCrypto()
+Verbose: NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int)
 
 ## License
 
