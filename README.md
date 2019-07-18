@@ -82,8 +82,8 @@ You can use the more verbose constructor to override specific options (if any).
 
 ### PBKDF2
 
-Default: `NewPBKDF2Crypto()`
-Verbose: `NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction)`
+* Default: `NewPBKDF2Crypto()`
+* Verbose: `NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction)`
 
 Allows you to override the number of iterations, key length, salt length and
 hashing functions (for HMAC). Similar to crypto algorithms, the first hash
@@ -91,8 +91,8 @@ function is preferred, others are for fallback compatibility.
 
 ### Scrypt
 
-Default: NewScryptCrypto()
-Verbose: NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int)
+* Default: `NewScryptCrypto()`
+* Verbose: `NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int)`
 
 ## License
 
