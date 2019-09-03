@@ -39,7 +39,7 @@ func NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int) ScryptCry
 }
 
 func (a ScryptCrypto) ID() string {
-	return "Scrypt"
+	return "scrypt"
 }
 
 func (a ScryptCrypto) Hash(input string) (string, error) {
