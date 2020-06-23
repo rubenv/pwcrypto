@@ -2,8 +2,6 @@ package pwcrypto
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNullCrypto(t *testing.T) {
@@ -27,44 +25,40 @@ func TestScryptCrypto(t *testing.T) {
 }
 
 func runCryptoTests(t *testing.T, a Algorithm) {
-	assert := assert.New(t)
-
-	assert.NotEqual("", a.ID())
+	notEqual(t, "", a.ID())
 
 	h, err := a.Hash("test")
-	assert.NoError(err)
-	assert.NotEqual("", h)
+	noError(t, err)
+	notEqual(t, "", h)
 
 	ok, mustUpgrade, err := a.Check("test", h)
-	assert.NoError(err)
-	assert.True(ok)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, ok, true)
+	equal(t, mustUpgrade, false)
 
 	ok, mustUpgrade, err = a.Check("bad", h)
-	assert.NoError(err)
-	assert.False(ok)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, ok, false)
+	equal(t, mustUpgrade, false)
 }
 
 func TestUpgrade(t *testing.T) {
-	assert := assert.New(t)
-
 	// We used to use null crypto (bad!)
 	c := New(NullCrypto{})
 
 	h1, err := c.Hash("test")
-	assert.NoError(err)
-	assert.NotEqual("", h1)
+	noError(t, err)
+	notEqual(t, "", h1)
 
 	valid, mustUpgrade, err := c.Check("test", h1)
-	assert.NoError(err)
-	assert.True(valid)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, true)
+	equal(t, mustUpgrade, false)
 
 	valid, mustUpgrade, err = c.Check("bad", h1)
-	assert.NoError(err)
-	assert.False(valid)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, false)
+	equal(t, mustUpgrade, false)
 
 	// Now we use PBKDF2
 	c = New(
@@ -73,48 +67,48 @@ func TestUpgrade(t *testing.T) {
 	)
 
 	h2, err := c.Hash("test")
-	assert.NoError(err)
-	assert.NotEqual("", h2)
+	noError(t, err)
+	notEqual(t, "", h2)
 
-	assert.NotEqual(h1, h2)
+	notEqual(t, h1, h2)
 
 	valid, mustUpgrade, err = c.Check("test", h2)
-	assert.NoError(err)
-	assert.True(valid)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, true)
+	equal(t, mustUpgrade, false)
 
 	valid, mustUpgrade, err = c.Check("bad", h2)
-	assert.NoError(err)
-	assert.False(valid)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, false)
+	equal(t, mustUpgrade, false)
 
 	// Old hashes are still recognized, but need an upgrade
 	valid, mustUpgrade, err = c.Check("test", h1)
-	assert.NoError(err)
-	assert.True(valid)
-	assert.True(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, true)
+	equal(t, mustUpgrade, true)
 
 	valid, mustUpgrade, err = c.Check("bad", h1)
-	assert.NoError(err)
-	assert.False(valid)
-	assert.False(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, false)
+	equal(t, mustUpgrade, false)
 
 	// Check upgrades for PBKDF2
 	oc := New(NewPBKDF2CryptoWithOptions(8192, 32, 24, []HashFunction{SHA1}))
 	h3, err := oc.Hash("test")
-	assert.NoError(err)
+	noError(t, err)
 
 	valid, mustUpgrade, err = c.Check("test", h3)
-	assert.NoError(err)
-	assert.True(valid)
-	assert.True(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, true)
+	equal(t, mustUpgrade, true)
 
 	oc = New(NewPBKDF2CryptoWithOptions(4096, 32, 24, []HashFunction{SHA512}))
 	h4, err := oc.Hash("test")
-	assert.NoError(err)
+	noError(t, err)
 
 	valid, mustUpgrade, err = c.Check("test", h4)
-	assert.NoError(err)
-	assert.True(valid)
-	assert.True(mustUpgrade)
+	noError(t, err)
+	equal(t, valid, true)
+	equal(t, mustUpgrade, true)
 }
