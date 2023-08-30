@@ -8,11 +8,11 @@ This library provides routines for securly storing passwords in a database and v
 
 Features:
 
-* All passwords stored with one-way hashes
-* Unique salts per user
-* Upgradable cryptography algorithms and hash strengths
-* Indicates when passwords should be rehashed to gradually upgrade password cryptography
-* Configurable hashing routines
+- All passwords stored with one-way hashes
+- Unique salts per user
+- Upgradable cryptography algorithms and hash strengths
+- Indicates when passwords should be rehashed to gradually upgrade password cryptography
+- Configurable hashing routines
 
 ## Usage
 
@@ -23,6 +23,7 @@ for storing passwords, the other algorithms are accepted for existing passwords
 
 ```
 passwords := pwcrypto.New(
+    NewArgon2Crypto(),
     NewScryptCrypto(),
     NewPBKDF2Crypto(),
     NewSHA256Crypto(),
@@ -47,10 +48,10 @@ valid, mustUpgrade, err := passwords.Check("someUserInput", hash)
 
 In the above:
 
-* `hash` is the value you previously stored in your database, look it up for the user trying to authenticate
-* `"someUserInput"` is the password entered during login
-* `valid` indicates whether the input is correct
-* `mustUpgrade` indicates that the password needs to be upgraded (see below).
+- `hash` is the value you previously stored in your database, look it up for the user trying to authenticate
+- `"someUserInput"` is the password entered during login
+- `valid` indicates whether the input is correct
+- `mustUpgrade` indicates that the password needs to be upgraded (see below).
 
 ## Password Upgrades
 
@@ -82,8 +83,8 @@ You can use the more verbose constructor to override specific options (if any).
 
 ### PBKDF2
 
-* Default: `NewPBKDF2Crypto()`
-* Verbose: `NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction)`
+- Default: `NewPBKDF2Crypto()`
+- Verbose: `NewPBKDF2CryptoWithOptions(iter, keyLen, saltLen int, hashFns []HashFunction)`
 
 Allows you to override the number of iterations, key length, salt length and
 hashing functions (for HMAC). Similar to crypto algorithms, the first hash
@@ -91,8 +92,13 @@ function is preferred, others are for fallback compatibility.
 
 ### Scrypt
 
-* Default: `NewScryptCrypto()`
-* Verbose: `NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int)`
+- Default: `NewScryptCrypto()`
+- Verbose: `NewScryptCryptoWithOptions(saltLen, cpuMemCost, r, p, keyLen int)`
+
+### Argon2
+
+- Default: `NewArgon2Crypto()`
+- Verbose: `NewArgon2CryptoWithOptions(saltLen int, time, memory uint32, threads uint8, keyLen uint32)`
 
 ## License
 

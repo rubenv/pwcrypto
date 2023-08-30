@@ -1,6 +1,7 @@
 package pwcrypto
 
 import (
+	"log"
 	"testing"
 )
 
@@ -24,12 +25,18 @@ func TestScryptCrypto(t *testing.T) {
 	runCryptoTests(t, NewScryptCrypto())
 }
 
+func TestArgon2Crypto(t *testing.T) {
+	runCryptoTests(t, NewArgon2Crypto())
+}
+
 func runCryptoTests(t *testing.T, a Algorithm) {
 	notEqual(t, "", a.ID())
 
 	h, err := a.Hash("test")
 	noError(t, err)
 	notEqual(t, "", h)
+
+	log.Println(h)
 
 	ok, mustUpgrade, err := a.Check("test", h)
 	noError(t, err)
