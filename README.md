@@ -2,7 +2,7 @@
 
 > Go library with password cryptography routines
 
-[![test](https://github.com/rubenv/pwcrypto/actions/workflows/test.yml/badge.svg)](https://github.com/rubenv/pwcrypto/actions/workflows/test.yml) ![GoDoc](https://godoc.org/github.com/rubenv/pwcrypto?status.png)](https://godoc.org/github.com/rubenv/pwcrypto)
+[![test](https://github.com/rubenv/pwcrypto/actions/workflows/test.yml/badge.svg)](https://github.com/rubenv/pwcrypto/actions/workflows/test.yml) [![GoDoc](https://godoc.org/github.com/rubenv/pwcrypto?status.png)](https://godoc.org/github.com/rubenv/pwcrypto)
 
 This library provides routines for securly storing passwords in a database and validating them.
 
