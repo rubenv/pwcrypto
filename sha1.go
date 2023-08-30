@@ -64,6 +64,6 @@ func (a SHA1Crypto) Check(input, hashed string) (bool, bool, error) {
 func (a SHA1Crypto) hashVal(salt []byte, input string) string {
 	h := sha1.New()
 	h.Write(salt)
-	io.WriteString(h, input)
+	_, _ = io.WriteString(h, input)
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
